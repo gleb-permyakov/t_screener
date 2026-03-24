@@ -8,13 +8,13 @@ import t
 def make_nano(nano):
     nano = int(nano / 10000000)
     if int(nano / 10) == 0:
-        return f"0{nano}"
-    return f"{nano}"
+        return f"0{abs(nano)}"
+    return f"{abs(nano)}"
 
 
 def make_chart_candles (figi1, figi2, interval):
 
-    from_data = "2026-02-24T16:30:00Z"
+    from_data = "2024-01-10T16:30:00Z"
     to_data = "2026-03-24T23:00:00Z"
 
     # Получение исторических данных о свечках

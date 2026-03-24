@@ -61,6 +61,7 @@ def get_candles(figi, date_from, date_to, interval):
     conn.request("POST", "/rest/tinkoff.public.invest.api.contract.v1.MarketDataService/GetCandles", payload, headers)
     res = conn.getresponse()
     data = res.read()
+    print(json.loads(data))
     for i in json.loads(data)["candles"]:
         print(i, "\n")
     return json.loads(data)["candles"]
@@ -94,7 +95,7 @@ def get_bond_figi(name):
     return None
 
 
-def currency_figi(ticker):
+def get_currency_figi_by_name(ticker):
     ssl_context = make_ssl()
 
     conn = http.client.HTTPSConnection(
@@ -103,19 +104,23 @@ def currency_figi(ticker):
     )
 
     payload = json.dumps({
-        "idType": "INSTRUMENT_ID_UNSPECIFIED",
-        "classCode": "string",
-        "id": "string"
+        "instrumentStatus": "INSTRUMENT_STATUS_UNSPECIFIED",
+        "instrumentExchange": "INSTRUMENT_EXCHANGE_UNSPECIFIED"
     })
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': f'Bearer {TOKEN}'
     }
-    conn.request("POST", "/rest/tinkoff.public.invest.api.contract.v1.InstrumentsService/CurrencyBy", payload, headers)
+    conn.request("POST", "/rest/tinkoff.public.invest.api.contract.v1.InstrumentsService/Currencies", payload, headers)
     res = conn.getresponse()
     data = res.read()
-    print(data.decode("utf-8"))
+    res_data = json.loads(data)
+    # print(res_data)
+    for i in res_data["instruments"]:
+        if ticker in i["name"]:
+            return i["figi"]
+    return None
 
 
 def make_ssl():
